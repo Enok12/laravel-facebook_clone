@@ -17,7 +17,9 @@ class RetrievePostsTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user,'api');
 
-        $posts = Post::factory(2)->create();
+        $posts = Post::factory(2)->create([
+            'user_id' => $user->id
+        ]);
         $response = $this->get('/api/posts');
 
         $response->assertStatus(200)
@@ -26,9 +28,9 @@ class RetrievePostsTest extends TestCase
                 [
                     'data' => [
                         'type' => 'posts',
-                        'post_id' => $posts->first()->id,
+                        'post_id' => $posts->last()->id,
                         'attributes' => [
-                            'body' => $posts->first()->body,
+                            'body' => $posts->last()->body,
                         ]
                     ]
                 ],
@@ -36,9 +38,9 @@ class RetrievePostsTest extends TestCase
                         [
                             'data' => [
                                 'type' => 'posts',
-                                'post_id' => $posts->last()->id,
+                                'post_id' => $posts->first()->id,
                                 'attributes' => [
-                                    'body' => $posts->last()->body,
+                                    'body' => $posts->first()->body,
                                 ]
                             ]
                         ]
@@ -52,5 +54,26 @@ class RetrievePostsTest extends TestCase
 
 
 
+    }
+
+    /** @test */
+    public function a_user_can_only_retrieve_their_posts(){
+
+        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $posts = Post::factory(1)->create();
+        $response = $this->get('/api/posts');
+
+        $response->assertStatus(200)
+        ->assertExactJson([
+            'data' => [
+
+            ],
+            'links' => [
+                'self' => url('/post/'),
+            ]
+        ]);
     }
 }
