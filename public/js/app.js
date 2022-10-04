@@ -5664,6 +5664,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5674,7 +5675,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      posts: null
+      posts: [],
+      loading: true
     };
   },
   mounted: function mounted() {
@@ -5682,8 +5684,10 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get("/api/posts").then(function (res) {
       _this.posts = res.data;
+      _this.loading = false;
     })["catch"](function (error) {
       console.log("Unable to catch posts");
+      _this.loading = false;
     });
   }
 });
@@ -29341,7 +29345,7 @@ var render = function () {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "text-sm text-gray-600" }, [
-              _vm._v("12 min"),
+              _vm._v(_vm._s(_vm.post.data.attributes.posted_at)),
             ]),
           ]),
         ]),
@@ -29351,17 +29355,14 @@ var render = function () {
         ]),
       ]),
       _vm._v(" "),
-       true
+      _vm.post.data.attributes.image
         ? _c("div", { staticClass: "w-full" }, [
             _c("img", {
               staticClass: "w-full",
-              attrs: {
-                src: "https://images.unsplash.com/photo-1484591974057-265bb767ef71?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80",
-                alt: "",
-              },
+              attrs: { src: _vm.post.data.attributes.image, alt: "" },
             }),
           ])
-        : 0,
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "div",
@@ -29543,9 +29544,11 @@ var render = function () {
     [
       _c("NewPost"),
       _vm._v(" "),
-      _vm._l(_vm.posts.data, function (post) {
-        return _c("Post", { key: post.data.post_id, attrs: { post: post } })
-      }),
+      _vm.loading
+        ? _c("p", [_vm._v("Loading Posts......")])
+        : _vm._l(_vm.posts.data, function (post) {
+            return _c("Post", { key: post.data.post_id, attrs: { post: post } })
+          }),
     ],
     2
   )

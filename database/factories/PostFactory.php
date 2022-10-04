@@ -18,6 +18,7 @@ class PostFactory extends Factory
         return [
             'body' => $this->faker->sentence,
             'user_id' => User::factory()->create(),
+            'image' => 'image.jpg',
         ];
     }
 }

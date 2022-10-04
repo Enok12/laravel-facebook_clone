@@ -14,7 +14,7 @@
         <!-- Name and Time -->
         <div class="ml-6">
           <div class="text-sm font-bold">{{post.data.attributes.posted_by.data.attributes.name}}</div>
-          <div class="text-sm text-gray-600">12 min</div>
+          <div class="text-sm text-gray-600">{{ post.data.attributes.posted_at }}</div>
         </div>
       </div>
 
@@ -24,9 +24,9 @@
       </div>
     </div>
     <!-- Post Image -->
-    <div class="w-full" v-if="true">
+    <div class="w-full" v-if="post.data.attributes.image">
       <img
-        src="https://images.unsplash.com/photo-1484591974057-265bb767ef71?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80"
+        :src=post.data.attributes.image
         alt=""
         class="w-full"
       />
