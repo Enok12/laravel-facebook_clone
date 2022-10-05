@@ -5453,7 +5453,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "Nav"
+  name: "Nav",
+  data: function data() {
+    return {
+      user: null
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    axios.get('api/auth-user').then(function (res) {
+      _this.user = res.data;
+    })["catch"](function (error) {
+      'Unable to fetch Auth User';
+    });
+  }
 });
 
 /***/ }),
@@ -5706,6 +5720,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Post_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Post.vue */ "./resources/js/components/Post.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -29310,7 +29333,7 @@ var render = function () {
             {
               staticClass:
                 "px-6 h-full border-b-2 border-white flex items-center",
-              attrs: { to: "/" },
+              attrs: { to: "/users/" + _vm.user.data.user_id },
             },
             [
               _c("img", {
@@ -29752,7 +29775,11 @@ var render = function () {
             _vm._m(1),
             _vm._v(" "),
             _c("p", { staticClass: "ml-4 text-2xl text-gray-100" }, [
-              _vm._v(_vm._s(_vm.user.data.attributes.name)),
+              _vm._v(
+                "\n        " +
+                  _vm._s(_vm.user.data.attributes.name) +
+                  "\n      "
+              ),
             ]),
           ]
         ),
