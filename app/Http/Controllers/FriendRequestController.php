@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Friend;
 use App\Models\User;
 use App\Http\Resources\Friend as FriendsResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions;
+
 
 
 class FriendRequestController extends Controller
@@ -15,8 +18,12 @@ class FriendRequestController extends Controller
             'friend_id' => '',
         ]);
 
-        User::find($data['friend_id'])
-        ->friends()->attach(auth()->user());
+        try {
+            User::findOrFail($data['friend_id'])
+            ->friends()->attach(auth()->user());
+        } catch (ModelNotFoundException $e) {
+            throw new UserNotFoundException();
+        }
 
             return new FriendsResource (
                 Friend::where('user_id',auth()->user()->id)
