@@ -562,11 +562,11 @@ video {
 .left-0 {
   left: 0px;
 }
-.z-20 {
-  z-index: 20;
-}
 .z-10 {
   z-index: 10;
+}
+.z-20 {
+  z-index: 20;
 }
 .m-4 {
   margin: 1rem;
@@ -621,11 +621,11 @@ video {
 .mb-0 {
   margin-bottom: 0px;
 }
-.-mb-8 {
-  margin-bottom: -2rem;
-}
 .mb-8 {
   margin-bottom: 2rem;
+}
+.-mb-8 {
+  margin-bottom: -2rem;
 }
 .flex {
   display: flex;
@@ -737,9 +737,6 @@ video {
 }
 .border-4 {
   border-width: 4px;
-}
-.border {
-  border-width: 1px;
 }
 .border-t {
   border-top-width: 1px;
