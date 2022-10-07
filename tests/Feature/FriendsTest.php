@@ -73,4 +73,46 @@ class FriendsTest extends TestCase
         ]);
     }
 
+    /** @test */
+    public function friend_request_can_be_accepted(){
+
+        $this->withoutExceptionHandling();
+
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+
+        $this->post('/api/friend-request',[
+            'friend_id' => $anotheruser->id
+        ])->assertStatus(200);
+
+        $response = $this->actingAs($anotheruser,'api')
+        ->post('/api/friend-request-response',[
+            'user_id' => $user->id,
+            'status' => 1 //1 Accepted, 0 Not Accepted
+        ])->assertStatus(200);
+
+        $friendrequest = Friend::first();
+        $this->assertNotNull($friendrequest->confirmed_at);
+        $this->assertEquals(now()->startOfSecond(),$friendrequest->confirmed_at); //now()->startOfSecond() will output date along with seconds
+        $this->assertEquals(1,$friendrequest->status);
+
+        $response->assertJson([
+            'data'=> [
+                'type' => 'friend-request',
+                'friend_request_id' => $friendrequest->id,
+                'attributes' => [
+                    'confirmed_at'=> $friendrequest->confirmed_at->diffForHumans(),
+                ]
+                ],
+                'links' => [
+                    'self'=> url('/user/'.$anotheruser->id)
+                ] 
+        ]);
+
+
+
+    }
+
 }
