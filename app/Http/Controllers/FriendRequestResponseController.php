@@ -23,6 +23,7 @@ class FriendRequestResponseController extends Controller
             ->where('friend_id',auth()->user()->id)
             ->firstOrFail();
         } catch (ModelNotFoundException $e) {
+            
             throw new FriendRequestNotFoundException();
         }
 

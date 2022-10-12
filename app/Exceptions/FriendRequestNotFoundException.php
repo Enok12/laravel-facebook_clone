@@ -14,7 +14,6 @@ class FriendRequestNotFoundException extends Exception
      */
     public function render($request)
     {
-
         return response()->json([
             'errors'=> [
                 'code' => 404,

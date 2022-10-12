@@ -137,4 +137,42 @@ class FriendsTest extends TestCase
         ]);
     }
 
+    /** @test */
+    public function only_valid_receiptants_can_accept_a_friend_request(){
+    
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+        $thirduser = User::factory()->create();
+  
+        $this->post('/api/friend-request',[
+            'friend_id' => $anotheruser->id
+        ])->assertStatus(200);
+
+        
+        $response = $this->actingAs($thirduser,'api')
+        ->post('/api/friend-request-response',[
+            'user_id' => $user->id,
+            'status' => 1 //1 Accepted, 0 Not Accepted
+        ])->assertStatus(404);
+
+    
+        $friendrequest = Friend::first();
+        $this->assertNull($friendrequest->confirmed_at);
+        $this->assertNull($friendrequest->status);
+
+        $response->assertJson([
+            'errors'=> [
+                'code' => 404,
+                'title' => 'Friend Request Not Found',
+                'detail' => 'Unable to find friend request with the information provided'
+            ]
+        ]);
+
+
+
+    }
+
+
 }
