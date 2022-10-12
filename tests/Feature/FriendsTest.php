@@ -210,5 +210,77 @@ class FriendsTest extends TestCase
 
     }
 
+ /** @test */
+    public function a_friendhsip_is_retrieved_when_fetching_profile(){
+        // $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+
+        $friendrequest = Friend::create([
+            'user_id'=>$user->id,
+            'friend_id'=>$anotheruser->id,
+            'confirmed_at'=>now()->subDay(),
+            'status'=>1,
+        ]);
+
+        $this->get('/api/users/'.$anotheruser->id)
+        ->assertStatus(200)
+        ->assertJson([
+            'data' => [
+                'attributes' => [
+                    'friendship' => [
+                        'data' => [
+                           'friend_request_id' => $friendrequest->id,
+                           'attributes' => [
+                                'confirmed_at' => '1 day ago',
+                           ]
+                        ]
+                    ]
+                ]
+                ],
+                
+        ]);
+
+
+    }
+
+    /** @test */
+    public function an_inverse_friendhsip_is_retrieved_when_fetching_profile(){
+        // $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+
+        $friendrequest = Friend::create([
+            'friend_id'=>$user->id,
+            'user_id'=>$anotheruser->id,
+            'confirmed_at'=>now()->subDay(),
+            'status'=>1,
+        ]);
+
+        $this->get('/api/users/'.$anotheruser->id)
+        ->assertStatus(200)
+        ->assertJson([
+            'data' => [
+                'attributes' => [
+                    'friendship' => [
+                        'data' => [
+                           'friend_request_id' => $friendrequest->id,
+                           'attributes' => [
+                                'confirmed_at' => '1 day ago',
+                           ]
+                        ]
+                    ]
+                ]
+                ],
+                
+        ]);
+
+
+    }
+
 
 }
