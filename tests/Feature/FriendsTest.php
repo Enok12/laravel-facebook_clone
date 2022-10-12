@@ -174,5 +174,41 @@ class FriendsTest extends TestCase
 
     }
 
+        /** @test */
+    public function a_friend_id_is_required_for_friend_reuqest(){
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user,'api')
+        ->post('/api/friend-request',[
+            'friend_id' => ''
+        ]);
+
+        $responsetrim = json_decode($response->getContent(),true);
+
+        //Checks whether the friend_id key is present on the array which means there is a validation required
+        $this->assertArrayHasKey('friend_id',$responsetrim['errors']['meta'] );
+    }
+
+
+    /** @test */
+    public function a_user_id_and_status_are_required_for_friend_reqiest (){
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user,'api')
+        ->post('/api/friend-request-response',[
+            'user_id' => '',
+            'status' => '' //1 Accepted, 0 Not Accepted
+        ])->assertStatus(422);
+
+        $responsetrim = json_decode($response->getContent(),true);
+
+        //Checks whether the friend_id key is present on the array which means there is a validation required
+        $this->assertArrayHasKey('user_id',$responsetrim['errors']['meta'] );
+        $this->assertArrayHasKey('status',$responsetrim['errors']['meta'] );
+
+    }
+
 
 }
