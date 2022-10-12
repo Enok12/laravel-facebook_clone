@@ -283,4 +283,87 @@ class FriendsTest extends TestCase
     }
 
 
+       /** @test */
+       public function friend_request_can_be_ignored(){
+
+        // $this->withoutExceptionHandling();
+
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+
+        $this->post('/api/friend-request',[
+            'friend_id' => $anotheruser->id
+        ])->assertStatus(200);
+
+        $response = $this->actingAs($anotheruser,'api')
+        ->delete('/api/friend-request-response/delete',[
+            'user_id' => $user->id,
+        ])->assertStatus(204);
+
+        $friendrequest = Friend::first();
+        $this->assertNull($friendrequest);
+        $response->assertNoContent();
+
+       
+
+
+
+    }
+
+
+     /** @test */
+     public function only_the_receiptants_can_ignore_a_friend_request(){
+    
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $anotheruser = User::factory()->create();
+        $thirduser = User::factory()->create();
+  
+        $this->post('/api/friend-request',[
+            'friend_id' => $anotheruser->id
+        ])->assertStatus(200);
+
+        
+        $response = $this->actingAs($thirduser,'api')
+        ->delete('/api/friend-request-response/delete',[
+            'user_id' => $user->id,
+        ])->assertStatus(404);
+
+    
+        $friendrequest = Friend::first();
+        $this->assertNull($friendrequest->confirmed_at);
+        $this->assertNull($friendrequest->status);
+
+        $response->assertJson([
+            'errors'=> [
+                'code' => 404,
+                'title' => 'Friend Request Not Found',
+                'detail' => 'Unable to find friend request with the information provided'
+            ]
+        ]);
+
+
+
+    }
+
+        /** @test */
+        public function a_user_id_is_required_to_ignore_a_friend_request_response (){
+            // $this->withoutExceptionHandling();
+            $user = User::factory()->create();
+    
+            $response = $this->actingAs($user,'api')
+            ->delete('/api/friend-request-response/delete',[
+                'user_id' => '',
+            ])->assertStatus(422);
+    
+            $responsetrim = json_decode($response->getContent(),true);
+    
+            //Checks whether the friend_id key is present on the array which means there is a validation required
+            $this->assertArrayHasKey('user_id',$responsetrim['errors']['meta'] );
+        }
+
+
 }
