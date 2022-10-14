@@ -5776,6 +5776,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5804,7 +5807,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     });
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)({
-    user: 'user'
+    user: 'user',
+    FriendButtontext: 'FriendButtontext'
   }))
 });
 
@@ -5986,24 +5990,54 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var state = {
   user: null,
-  userStatus: null
+  userStatus: null,
+  friendButtontext: null
 };
 var getters = {
   user: function user(state) {
     return state.user;
+  },
+  friendship: function friendship(state) {
+    return state.user.data.attributes.friendship;
+  },
+  FriendButtontext: function FriendButtontext(state) {
+    return state.friendButtontext;
   }
 };
 var actions = {
   fetchUser: function fetchUser(_ref, userId) {
     var commit = _ref.commit,
-        state = _ref.state;
+        dispatch = _ref.dispatch;
     commit('setUserStatus', 'Loading');
     axios.get("/api/users/" + userId).then(function (res) {
       commit('setUser', res.data);
       commit('setUserStatus', 'Success');
+      dispatch('setFriendButton');
     })["catch"](function (error) {
       commit('setUserStatus', 'Error');
     });
+  },
+  sendFriendRequest: function sendFriendRequest(_ref2, friendId) {
+    var commit = _ref2.commit,
+        state = _ref2.state;
+    commit('setButtonText', 'Loading');
+    axios.post('/api/friend-request', {
+      'friend_id': friendId
+    }).then(function (res) {
+      commit('setButtonText', 'Pending Friend Request');
+    })["catch"](function (error) {
+      commit('setUserStatus', 'Add Friend');
+    });
+  },
+  setFriendButton: function setFriendButton(_ref3) {
+    var commit = _ref3.commit,
+        getters = _ref3.getters;
+
+    if (getters.friendship === null) {
+      commit('setButtonText', 'Add Friend');
+    } else if (getters.friendship.data.attributes.confirmed_at === null) {
+      commit('setButtonText', 'Pending Friend Request');
+    }
   }
 };
 var mutations = {
@@ -6012,6 +6046,9 @@ var mutations = {
   },
   setUserStatus: function setUserStatus(state, status) {
     state.userStatus = status;
+  },
+  setButtonText: function setButtonText(state, text) {
+    state.friendButtontext = text;
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -29973,7 +30010,34 @@ var render = function () {
           ]
         ),
         _vm._v(" "),
-        _vm._m(2),
+        _c(
+          "div",
+          {
+            staticClass:
+              "absolute flex items-center bottom-0 right-0 mb-4 z-20 mr-12",
+          },
+          [
+            _c(
+              "button",
+              {
+                staticClass: "py-1 px-3 bg-gray-200 rounded",
+                on: {
+                  click: function ($event) {
+                    return _vm.$store.dispatch(
+                      "sendFriendRequest",
+                      _vm.$route.params.userId
+                    )
+                  },
+                },
+              },
+              [
+                _vm._v(
+                  "\n        " + _vm._s(_vm.FriendButtontext) + "\n        "
+                ),
+              ]
+            ),
+          ]
+        ),
       ]),
       _vm._v(" "),
       _vm.postLoading
@@ -30018,23 +30082,6 @@ var staticRenderFns = [
         },
       }),
     ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "absolute flex items-center bottom-0 right-0 mb-4 z-20 mr-12",
-      },
-      [
-        _c("button", { staticClass: "py-1 px-3 bg-gray-200 rounded" }, [
-          _vm._v("Add Friend"),
-        ]),
-      ]
-    )
   },
 ]
 render._withStripped = true

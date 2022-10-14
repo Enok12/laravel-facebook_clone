@@ -22,7 +22,10 @@
         </p>
       </div>
       <div class="absolute flex items-center bottom-0 right-0 mb-4 z-20 mr-12">
-        <button class="py-1 px-3 bg-gray-200 rounded">Add Friend</button>
+        <button class="py-1 px-3 bg-gray-200 rounded" 
+        @click="$store.dispatch('sendFriendRequest',$route.params.userId)">
+          {{ FriendButtontext }}
+          </button>
       </div>
     </div>
 
@@ -77,6 +80,7 @@ export default {
   computed:{
     ...mapGetters({
       user:'user',
+      FriendButtontext:'FriendButtontext',
     })
   }
 };
