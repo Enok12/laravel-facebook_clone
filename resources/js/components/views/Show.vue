@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center" v-if="status.user === 'Success' && user">
     <div class="relative mb-8">
       <div class="w-100 h-64 overflow-hidden z-10">
         <img
@@ -43,7 +43,9 @@
       </div>
     </div>
 
-    <p v-if="postLoading">Loading Posts......</p>
+    <p v-if="status.posts === 'Loading'">Loading Posts......</p>
+
+    <p v-else-if="posts.length < 1">Get Stareted</p>
 
     <Post
       v-else
@@ -52,7 +54,6 @@
       :post="post"
     />
 
-    <p v-if="!postLoading && posts.data.length < 1">Get Stareted</p>
   </div>
 </template>
 
@@ -67,33 +68,19 @@ export default {
   components: {
     Post,
   },
-  data: () => {
-    return {
-      posts: null,
-      postLoading: true,
-    };
-  },
   mounted() {
 
    this.$store.dispatch('fetchUser',this.$route.params.userId)
+   this.$store.dispatch('fetchUserPosts',this.$route.params.userId)
 
-    axios
-      .get("/api/users/" + this.$route.params.userId + "/posts")
-      .then((res) => {
-        this.posts = res.data;
-        this.postLoading = false;
-      })
-      .catch((error) => {
-        console.log("Unable to catch posts");
-        this.postLoading = false;
-      })
-      .finally(() => {
-        this.postLoading = false;
-      });
+
+    
   },
   computed:{
     ...mapGetters({
       user:'user',
+      posts:'posts',
+      status:'status',
       FriendButtontext:'FriendButtontext',
     })
   }
