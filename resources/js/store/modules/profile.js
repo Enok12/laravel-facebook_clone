@@ -23,6 +23,10 @@ const getters = {
         return state.user.data.attributes.friendship
     },
     FriendButtontext: (state, getters, rootState) => {
+
+        if(rootState.User.user.data.user_id === state.user.data.user_id){
+            return '';
+        }
         if (getters.friendship === null) {
             return 'Add Friend';
         } else if (getters.friendship.data.attributes.confirmed_at === null
