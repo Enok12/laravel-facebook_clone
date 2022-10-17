@@ -6059,7 +6059,12 @@ var actions = {
   },
   sendFriendRequest: function sendFriendRequest(_ref3, friendId) {
     var commit = _ref3.commit,
-        state = _ref3.state;
+        getters = _ref3.getters;
+
+    if (getters.FriendButtontext !== 'Add Friend') {
+      return;
+    }
+
     axios.post('/api/friend-request', {
       'friend_id': friendId
     }).then(function (res) {
