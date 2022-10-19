@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Friend;
 
 class RetrievePostsTest extends TestCase
 {
@@ -12,14 +13,25 @@ class RetrievePostsTest extends TestCase
     /** @test */
     public function a_user_can_retrieve_posts()
     {
-        $this->withoutExceptionHandling();
 
         $user = User::factory()->create();
         $this->actingAs($user,'api');
 
+        $anotherUser = User::factory()->create();
+
+
         $posts = Post::factory(2)->create([
-            'user_id' => $user->id
+            'user_id' => $anotherUser->id
         ]);
+
+        Friend::create([
+            'user_id' => $user->id,
+            'friend_id' => $anotherUser->id,
+            'confirmed_at' => now(),
+            'status' => 1,
+
+        ]);
+
         $response = $this->get('/api/posts');
 
         $response->assertStatus(200)
