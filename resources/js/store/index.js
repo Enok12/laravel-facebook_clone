@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import User from './modules/user'
 import Title from './modules/title'
 import Profile from './modules/profile'
+import Posts from './modules/posts'
+
 
 
 
@@ -12,6 +14,7 @@ export default new Vuex.Store({
         User,
         Title,
         Profile,
+        Posts,
     }
 });
 

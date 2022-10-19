@@ -5690,6 +5690,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _NewPost_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../NewPost.vue */ "./resources/js/components/NewPost.vue");
 /* harmony import */ var _Post_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Post.vue */ "./resources/js/components/Post.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -5698,6 +5705,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5706,23 +5714,13 @@ __webpack_require__.r(__webpack_exports__);
     NewPost: _NewPost_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     Post: _Post_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  data: function data() {
-    return {
-      posts: [],
-      loading: true
-    };
-  },
   mounted: function mounted() {
-    var _this = this;
-
-    axios.get("/api/posts").then(function (res) {
-      _this.posts = res.data;
-      _this.loading = false;
-    })["catch"](function (error) {
-      console.log("Unable to catch posts");
-      _this.loading = false;
-    });
-  }
+    this.$store.dispatch('fetchNewsPosts');
+  },
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)({
+    posts: 'newsPosts',
+    newsStatus: 'newsStatus'
+  }))
 });
 
 /***/ }),
@@ -5968,24 +5966,82 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _modules_user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/user */ "./resources/js/store/modules/user.js");
 /* harmony import */ var _modules_title__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/title */ "./resources/js/store/modules/title.js");
 /* harmony import */ var _modules_profile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/profile */ "./resources/js/store/modules/profile.js");
+/* harmony import */ var _modules_posts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/posts */ "./resources/js/store/modules/posts.js");
 
 
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_4__["default"]);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_4__["default"].Store({
+
+vue__WEBPACK_IMPORTED_MODULE_4__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_5__["default"]);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_5__["default"].Store({
   modules: {
     User: _modules_user__WEBPACK_IMPORTED_MODULE_0__["default"],
     Title: _modules_title__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Profile: _modules_profile__WEBPACK_IMPORTED_MODULE_2__["default"]
+    Profile: _modules_profile__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Posts: _modules_posts__WEBPACK_IMPORTED_MODULE_3__["default"]
   }
 }));
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/posts.js":
+/*!*********************************************!*\
+  !*** ./resources/js/store/modules/posts.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var state = {
+  newsPosts: null,
+  newsPostsStatus: null
+};
+var getters = {
+  newsPosts: function newsPosts(state) {
+    return state.newsPosts;
+  },
+  newsStatus: function newsStatus(state) {
+    return {
+      newsPostsStatus: state.newsPostsStatus
+    };
+  }
+};
+var actions = {
+  fetchNewsPosts: function fetchNewsPosts(_ref) {
+    var commit = _ref.commit,
+        state = _ref.state;
+    commit('setPostsStatus', 'Loading');
+    axios.get("/api/posts").then(function (res) {
+      commit('setPosts', res.data);
+      commit('setPostsStatus', 'Success');
+    })["catch"](function (error) {
+      commit('setPostsStatus', 'Error');
+    });
+  }
+};
+var mutations = {
+  setPosts: function setPosts(state, posts) {
+    state.newsPosts = posts;
+  },
+  setPostsStatus: function setPostsStatus(state, status) {
+    state.newsPostsStatus = status;
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  state: state,
+  getters: getters,
+  actions: actions,
+  mutations: mutations
+});
 
 /***/ }),
 
@@ -30017,7 +30073,7 @@ var render = function () {
     [
       _c("NewPost"),
       _vm._v(" "),
-      _vm.loading
+      _vm.newsStatus.postStatus === "Loading"
         ? _c("p", [_vm._v("Loading Posts......")])
         : _vm._l(_vm.posts.data, function (post) {
             return _c("Post", { key: post.data.post_id, attrs: { post: post } })
