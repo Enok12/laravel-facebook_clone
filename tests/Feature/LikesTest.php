@@ -57,4 +57,53 @@ class LikesTest extends TestCase
 
         ]);
     }
+
+/** @test */
+public function posts_are_returned_with_likes(){
+    $this->withoutExceptionHandling();
+
+    $user = User::factory()->create();
+    $this->actingAs($user,'api');
+
+    $post = Post::factory()->create([
+        'id' => 123,
+        'user_id' => $user->id,
+    ]); //Id is customized to avoid confusion with user id when debugging
+
+
+     $this->post('/api/posts/'.$post->id.'/like')
+    ->assertStatus(200);
+
+    $response = $this->get('/api/posts')->assertStatus(200)
+    ->assertJson([
+        'data' =>[
+            [
+                'data' => [
+                    'type'=> 'posts',
+                    'attributes' => [
+                        'likes' => [
+                           'data' => [
+                            [
+                                'data' => [
+                                    'type' => 'Likes',
+                                    'like_id' => 1,
+                                    'attributes' =>[]
+                            ]
+                            ]
+                                ],
+                                'like_count' => 1,
+                                'user_likes_post' =>true,
+                            ],
+                   
+                    ]
+                    
+                ]
+            ]
+        ]
+    ]);
+    
 }
+
+}
+
+
