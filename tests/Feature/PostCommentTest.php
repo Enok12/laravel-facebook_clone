@@ -23,7 +23,6 @@ class PostCommentTest extends TestCase
     /** @test */
     public function a_user_can_comment_on_a_post()
     {
-        $this->withoutExceptionHandling();
 
         $user = User::factory()->create();
         $this->actingAs($user,'api');
@@ -75,4 +74,87 @@ class PostCommentTest extends TestCase
 
         ]);
     }
+
+    /** @test */
+    public function a_nody_is_required_to_leave_a_comment_on_a_post(){
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $post = Post::factory()->create([
+            'id' => 123
+        ]); //Id is customized to avoid confusion with user id when debugging
+
+
+        $response = $this->post('/api/posts/'.$post->id.'/comment',[
+            'body' => '',
+        ])
+        ->assertStatus(422);
+
+        $responsetrim = json_decode($response->getContent(),true);
+
+        //Checks whether the friend_id key is present on the array which means there is a validation required
+        $this->assertArrayHasKey('body',$responsetrim['errors']['meta'] );
+    }
+
+     /** @test */
+     public function posts_are_returned_with_comments(){
+        $user = User::factory()->create();
+        $this->actingAs($user,'api');
+
+        $post = Post::factory()->create([
+            'id' => 123,
+            'user_id' => $user->id,
+        ]); //Id is customized to avoid confusion with user id when debugging
+
+
+        $this->post('/api/posts/'.$post->id.'/comment',[
+            'body' => 'A great comment here',
+        ])
+        ->assertStatus(200);
+
+        $response = $this->get('/api/posts');
+
+        $comment = Comment::first();
+        $response->assertStatus(200)
+        ->assertJson([
+            'data' =>[
+                [
+                    'data' => [
+                        'type'=> 'posts',
+                        'attributes' => [
+                            'comments' => [
+                               'data' => [
+                                [
+                                    'data' => [
+                                        'type' => 'comments',
+                                        'comment_id' => 1,
+                                        'attributes' => [
+                                            'commented_by' => [
+                                                'data' => [
+                                                    'user_id' => $user->id,
+                                                    'attributes' => [
+                                                        'name' => $user->name,
+                                                    ]
+                                                ]
+                                            ],
+                                            'body' => 'A great comment here',
+                                            'commented_at' => $comment->created_at->diffForHumans(),
+                                        ]
+                                    ],
+                                    'links' => [
+                                        'self' => url('/posts/123'),
+                                    ]
+                                ]
+                                    ],
+                                    'comment_count' => 1,
+                                ],
+                       
+                        ]
+                        
+                    ]
+                ]
+            ]
+        ]);
+       
+     }
 }
