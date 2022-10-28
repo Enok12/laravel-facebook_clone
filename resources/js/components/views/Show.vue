@@ -49,8 +49,8 @@
 
     <Post
       v-else
-      v-for="post in posts.data"
-      :key="post.data.post_id"
+      v-for="(post,postKey) in posts.data"
+      :key="postKey"
       :post="post"
     />
 
