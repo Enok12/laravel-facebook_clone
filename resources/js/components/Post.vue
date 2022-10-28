@@ -45,7 +45,7 @@
         </svg>
         <p>{{ post.data.attributes.likes.like_count }} Likes</p>
       </div>
-      <div>133 comments</div>
+      <div>{{ post.data.attributes.comments.comment_count }} Comments</div>
     </div>
 
     <div class="flex justify-between border-1 border-gray-400 m-4">
@@ -85,8 +85,9 @@
           rounded-lg
           text-sm text-gray-700
           w-full
-          hover:bg-gray-200
+          focus:outline-none
         "
+        @click="comments = !comments "
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -100,6 +101,40 @@
         <p class="ml-2">Comment</p>
       </button>
     </div>
+
+    <div v-if="comments" class="border-t border-gray-400 p-4 pt-2 ">
+      <div class="flex">
+        <input type="text" v-model="commentBody" name="comment" class="w-full pl-4 h-8 bg-gray-200 rounded">
+        <button v-if="commentBody" class="bg-gray-200 ml-2 px-2 py-1 rounded focus:outline-none" @click="$store.dispatch('commentPost',{body:commentBody,postId:post.data.post_id,postKey:$vnode.key}); commentBody=''">
+          Post
+        </button>
+      </div>
+
+  <div class="flex my-4 items-center" v-for="comment in post.data.attributes.comments.data " :key="comment">
+    <div class="w-8">
+      <img
+            src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
+            alt="Profile"
+            class="w-8 h-8 object-cover rounded-full"
+          />
+    </div>
+    <div class="ml-4 flex-1">
+      <div class="bg-gray-200 rounded-lg p-2 text-sm">
+        <a :href="'/users/'+ comment.data.attributes.commented_by.data.user_id" class="font-bold text-blue-700">
+        {{ comment.data.attributes.commented_by.data.attributes.name }}
+        </a>
+        <p class="inline">
+          {{ comment.data.attributes.body }}
+        </p>
+      </div>
+      <div class="text-xs p-2">
+        <p>{{ comment.data.attributes.commented_at}}</p>
+      </div>
+    </div>
+  </div>
+
+    </div>
+
   </div>
 </template>
 
@@ -109,6 +144,12 @@ export default {
   props:[
     'post',
   ],
+  data: () =>{
+    return {
+      comments: false,
+      commentBody:'',
+    }
+  }
 };
 </script>
 
