@@ -2,20 +2,16 @@
   <div class="flex flex-col items-center" v-if="status.user === 'Success' && user">
     <div class="relative mb-8">
       <div class="w-100 h-64 overflow-hidden z-10">
-        <img
-          src="https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=559"
-          alt=""
-          class="object-cover w-full"
-        />
+        <UploadableImage image-width='1500' image-height='300' location='cover' :user-image="user.data.attributes.cover_image"
+        classes="object-cover w-full" alt="Cover" />
       </div>
 
       <div class="flex items-center absolute bottom-0 left-0 -mb-8 z-20 ml-12">
         <div class="w-32">
-          <img
-            src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
-            alt=""
-            class="object-cover w-32 h-32 border-4 border-gray-200 rounded-full"
-          />
+          <UploadableImage image-width='1500' image-height='300' location='profile' :user-image="user.data.attributes.profile_image"
+        classes="object-cover w-32 h-32 border-4 border-gray-200 rounded-full" alt="Profile" />
+
+          
         </div>
         <p class="ml-4 text-2xl text-gray-100">
           {{ user.data.attributes.name }}
@@ -60,6 +56,8 @@
 <script>
 import Post from "../Post.vue";
 import {mapGetters} from 'vuex'
+import UploadableImage from "../UploadableImage"
+
 
 
 export default {
@@ -67,6 +65,7 @@ export default {
 
   components: {
     Post,
+    UploadableImage,
   },
   mounted() {
 
