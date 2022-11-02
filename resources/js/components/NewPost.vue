@@ -4,7 +4,7 @@
       <div>
         <div class="w-8">
           <img
-            src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
+            :src="authUser.data.attributes.profile_image.data.attributes.path"
             alt="Profile"
             class="w-8 h-8 object-cover rounded-full"
           />
@@ -66,11 +66,17 @@
 
 <script>
 
-import _ from 'lodash';    
+import _ from 'lodash'; 
+import {mapGetters} from 'vuex'   
 export default {
   name: "NewPost",
 
   computed: {
+
+    ...mapGetters({
+      authUser:'authUser',
+    }),
+
     postMessage: {
       get() {
         return this.$store.getters.postMessage;

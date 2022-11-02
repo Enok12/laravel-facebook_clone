@@ -62,7 +62,7 @@
         class="px-6 h-full border-b-2 border-white flex items-center"
       >
         <img
-          src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
+          :src="authUser.data.attributes.profile_image.data.attributes.path"
           alt="Profile"
           class="w-8 h-8 object-cover rounded-full"
         />

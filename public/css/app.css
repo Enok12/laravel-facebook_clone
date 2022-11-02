@@ -628,14 +628,26 @@ video {
 .mb-8 {
   margin-bottom: 2rem;
 }
-.-mb-8 {
-  margin-bottom: -2rem;
+.-mb-7 {
+  margin-bottom: -1.75rem;
 }
 .mb-4 {
   margin-bottom: 1rem;
 }
 .mr-12 {
   margin-right: 3rem;
+}
+.-mb-1 {
+  margin-bottom: -0.25rem;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+.mb-7 {
+  margin-bottom: 1.75rem;
 }
 .inline {
   display: inline;

@@ -6,7 +6,7 @@
         <!-- Image -->
         <div class="w-8">
           <img
-            src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
+            :src="post.data.attributes.posted_by.data.attributes.profile_image.data.attributes.path"
             alt="Profile"
             class="w-8 h-8 object-cover rounded-full"
           />
@@ -113,7 +113,7 @@
   <div class="flex my-4 items-center" v-for="comment in post.data.attributes.comments.data " :key="comment">
     <div class="w-8">
       <img
-            src="https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg"
+            :src="comment.data.attributes.commented_by.data.attributes.profile_image.data.attributes.path"
             alt="Profile"
             class="w-8 h-8 object-cover rounded-full"
           />

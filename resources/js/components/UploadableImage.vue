@@ -1,7 +1,7 @@
 <template>
   <div>
     <img
-      :src="imageObject.data.attributes.path"
+      :src="userImage.data.attributes.path"
       :alt="alt"
       ref="userImage"
       :class="classes"
@@ -11,42 +11,52 @@
 
 <script>
 import Dropzone from "dropzone";
+import { mapGetters } from "vuex";
 
 export default {
   name: "UploadableImage",
 
   props: [
-    'imageWidth',
-    'imageHeight',
-    'location',
-    'userImage',
-    'classes',
-    'alt'
+    "imageWidth",
+    "imageHeight",
+    "location",
+    "userImage",
+    "classes",
+    "alt",
   ],
 
   data: () => {
     return {
       dropzone: null,
-      uploadedImage:null,
     };
   },
   mounted() {
-    this.dropzone = new Dropzone(this.$refs.userImage, this.settings);
-    // console.log(this.imageObject.data.attributes.path);
+    if (this.authUser.data.user_id == this.$route.params.userId) {
+      this.dropzone = new Dropzone(this.$refs.userImage, this.settings);
+      console.log('okay');
+    }
+
   },
+
   computed: {
+
+   ...mapGetters({
+      authUser:'authUser',
+    }),
+
     settings() {
-    let imageWidth = this.imageWidth;
-    let imageHeight = this.imageHeight;
-    let location = this.location;
+      let imageWidth = this.imageWidth;
+      let imageHeight = this.imageHeight;
+      let location = this.location;
 
       return {
         paramName: "image",
         url: "/api/user-images",
         acceptedFiles: "image/*",
-        
-        params: function params(files, xhr, chunk) { return { 'width' : imageWidth,'height': imageHeight,'location': location,
-         }; },
+
+        params: function params(files, xhr, chunk) {
+          return { width: imageWidth, height: imageHeight, location: location };
+        },
 
         // params:{
         //     'width': this.imageWidth,
@@ -58,15 +68,12 @@ export default {
             .content,
         },
         success: (e, res) => {
-          this.uploadedImage = res
-          alert("Uploaded");
+          this.$store.dispatch("fetchAuthUser");
+          this.$store.dispatch("fetchUser", this.$route.params.userId);
+          this.$store.dispatch("fetchUserPosts", this.$route.params.userId);
         },
       };
     },
-
-    imageObject(){
-      return this.uploadedImage || this.userImage
-    }
   },
 };
 </script>

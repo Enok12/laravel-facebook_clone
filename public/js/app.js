@@ -14320,6 +14320,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -14387,9 +14394,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "NewPost",
-  computed: {
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)({
+    authUser: 'authUser'
+  })), {}, {
     postMessage: {
       get: function get() {
         return this.$store.getters.postMessage;
@@ -14398,7 +14408,7 @@ __webpack_require__.r(__webpack_exports__);
         this.$store.commit("updateMessage", postMessage);
       }, 300)
     }
-  }
+  })
 });
 
 /***/ }),
@@ -14602,6 +14612,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -14614,19 +14631,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "UploadableImage",
-  props: ['imageWidth', 'imageHeight', 'location', 'userImage', 'classes', 'alt'],
+  props: ["imageWidth", "imageHeight", "location", "userImage", "classes", "alt"],
   data: function data() {
     return {
-      dropzone: null,
-      uploadedImage: null
+      dropzone: null
     };
   },
   mounted: function mounted() {
-    this.dropzone = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"](this.$refs.userImage, this.settings); // console.log(this.imageObject.data.attributes.path);
+    if (this.authUser.data.user_id == this.$route.params.userId) {
+      this.dropzone = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"](this.$refs.userImage, this.settings);
+      console.log('okay');
+    }
   },
-  computed: {
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)({
+    authUser: 'authUser'
+  })), {}, {
     settings: function settings() {
       var _this = this;
 
@@ -14639,9 +14661,9 @@ __webpack_require__.r(__webpack_exports__);
         acceptedFiles: "image/*",
         params: function params(files, xhr, chunk) {
           return {
-            'width': imageWidth,
-            'height': imageHeight,
-            'location': location
+            width: imageWidth,
+            height: imageHeight,
+            location: location
           };
         },
         // params:{
@@ -14653,15 +14675,15 @@ __webpack_require__.r(__webpack_exports__);
           "X-CSRF-TOKEN": document.head.querySelector("meta[name=csrf-token]").content
         },
         success: function success(e, res) {
-          _this.uploadedImage = res;
-          alert("Uploaded");
+          _this.$store.dispatch("fetchAuthUser");
+
+          _this.$store.dispatch("fetchUser", _this.$route.params.userId);
+
+          _this.$store.dispatch("fetchUserPosts", _this.$route.params.userId);
         }
       };
-    },
-    imageObject: function imageObject() {
-      return this.uploadedImage || this.userImage;
     }
-  }
+  })
 });
 
 /***/ }),
@@ -55253,7 +55275,8 @@ var render = function () {
               _c("img", {
                 staticClass: "w-8 h-8 object-cover rounded-full",
                 attrs: {
-                  src: "https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg",
+                  src: _vm.authUser.data.attributes.profile_image.data
+                    .attributes.path,
                   alt: "Profile",
                 },
               }),
@@ -55338,7 +55361,18 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "bg-white rounded shadow w-2/3 p-4" }, [
     _c("div", { staticClass: "flex justify-between items-center" }, [
-      _vm._m(0),
+      _c("div", [
+        _c("div", { staticClass: "w-8" }, [
+          _c("img", {
+            staticClass: "w-8 h-8 object-cover rounded-full",
+            attrs: {
+              src: _vm.authUser.data.attributes.profile_image.data.attributes
+                .path,
+              alt: "Profile",
+            },
+          }),
+        ]),
+      ]),
       _vm._v(" "),
       _c(
         "div",
@@ -55418,24 +55452,7 @@ var render = function () {
     ]),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("div", { staticClass: "w-8" }, [
-        _c("img", {
-          staticClass: "w-8 h-8 object-cover rounded-full",
-          attrs: {
-            src: "https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg",
-            alt: "Profile",
-          },
-        }),
-      ]),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -55464,7 +55481,16 @@ var render = function () {
     [
       _c("div", { staticClass: "flex flex-col p-4" }, [
         _c("div", { staticClass: "flex items-center" }, [
-          _vm._m(0),
+          _c("div", { staticClass: "w-8" }, [
+            _c("img", {
+              staticClass: "w-8 h-8 object-cover rounded-full",
+              attrs: {
+                src: _vm.post.data.attributes.posted_by.data.attributes
+                  .profile_image.data.attributes.path,
+                alt: "Profile",
+              },
+            }),
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "ml-6" }, [
             _c("div", { staticClass: "text-sm font-bold" }, [
@@ -55675,7 +55701,16 @@ var render = function () {
                     "div",
                     { key: comment, staticClass: "flex my-4 items-center" },
                     [
-                      _vm._m(1, true),
+                      _c("div", { staticClass: "w-8" }, [
+                        _c("img", {
+                          staticClass: "w-8 h-8 object-cover rounded-full",
+                          attrs: {
+                            src: comment.data.attributes.commented_by.data
+                              .attributes.profile_image.data.attributes.path,
+                            alt: "Profile",
+                          },
+                        }),
+                      ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "ml-4 flex-1" }, [
                         _c(
@@ -55734,36 +55769,7 @@ var render = function () {
     ]
   )
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "w-8" }, [
-      _c("img", {
-        staticClass: "w-8 h-8 object-cover rounded-full",
-        attrs: {
-          src: "https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg",
-          alt: "Profile",
-        },
-      }),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "w-8" }, [
-      _c("img", {
-        staticClass: "w-8 h-8 object-cover rounded-full",
-        attrs: {
-          src: "https://www.diethelmtravel.com/wp-content/uploads/2016/04/bill-gates-wealthiest-person.jpg",
-          alt: "Profile",
-        },
-      }),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -55830,7 +55836,7 @@ var render = function () {
     _c("img", {
       ref: "userImage",
       class: _vm.classes,
-      attrs: { src: _vm.imageObject.data.attributes.path, alt: _vm.alt },
+      attrs: { src: _vm.userImage.data.attributes.path, alt: _vm.alt },
     }),
   ])
 }
@@ -55907,8 +55913,8 @@ var render = function () {
               [
                 _c("UploadableImage", {
                   attrs: {
-                    "image-width": "1500",
-                    "image-height": "300",
+                    "image-width": "1200",
+                    "image-height": "800",
                     location: "cover",
                     "user-image": _vm.user.data.attributes.cover_image,
                     classes: "object-cover w-full",
@@ -55923,7 +55929,7 @@ var render = function () {
               "div",
               {
                 staticClass:
-                  "flex items-center absolute bottom-0 left-0 -mb-8 z-20 ml-12",
+                  "flex items-center absolute bottom-0 left-0 mb-1 z-20 ml-12",
               },
               [
                 _c(
@@ -55932,8 +55938,8 @@ var render = function () {
                   [
                     _c("UploadableImage", {
                       attrs: {
-                        "image-width": "1500",
-                        "image-height": "300",
+                        "image-width": "750",
+                        "image-height": "750",
                         location: "profile",
                         "user-image": _vm.user.data.attributes.profile_image,
                         classes:
