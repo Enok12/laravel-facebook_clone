@@ -14320,7 +14320,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -14393,12 +14394,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "NewPost",
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)({
-    authUser: 'authUser'
+  data: function data() {
+    return {
+      dropzone: null
+    };
+  },
+  mounted: function mounted() {
+    this.dropzone = new dropzone__WEBPACK_IMPORTED_MODULE_1__["default"](this.$refs.postImage, this.settings);
+  },
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)({
+    authUser: "authUser"
   })), {}, {
     postMessage: {
       get: function get() {
@@ -14407,8 +14419,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       set: lodash__WEBPACK_IMPORTED_MODULE_0___default().debounce(function (postMessage) {
         this.$store.commit("updateMessage", postMessage);
       }, 300)
+    },
+    settings: function settings() {
+      var _this = this;
+
+      return {
+        paramName: "image",
+        url: "/api/posts",
+        acceptedFiles: "image/*",
+        clickable: ".dz-clickable",
+        autoProcessQueue: false,
+        params: function params(files, xhr, chunk) {
+          return {
+            width: 1000,
+            height: 1000
+          };
+        },
+        headers: {
+          "X-CSRF-TOKEN": document.head.querySelector("meta[name=csrf-token]").content
+        },
+        sending: function sending(files, xhr, formData) {
+          formData.append('body', _this.$store.getters.postMessage);
+        },
+        success: function success(e, res) {
+          alert("success");
+        }
+      };
     }
-  })
+  }),
+  methods: {
+    postHandler: function postHandler() {
+      if (this.dropzone.getAcceptedFiles().length) {
+        this.dropzone.processQueue();
+      } else {
+        this.$store.dispatch("postMessage");
+      }
+    }
+  }
 });
 
 /***/ }),
@@ -30289,7 +30336,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.fade-enter-active[data-v-4f84dfc5],.fade-leave-active[data-v-4f84dfc5]{\r\n  transition: opacity .5s;\n}\n.fade-enter[data-v-4f84dfc5],.fade-leave-to[data-v-4f84dfc5]{\r\n   opacity: 0;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.fade-enter-active[data-v-4f84dfc5],\r\n.fade-leave-active[data-v-4f84dfc5] {\r\n  transition: opacity 0.5s;\n}\n.fade-enter[data-v-4f84dfc5],\r\n.fade-leave-to[data-v-4f84dfc5] {\r\n  opacity: 0;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -55407,11 +55454,7 @@ var render = function () {
                   "button",
                   {
                     staticClass: "bg-gray-200 ml-2 px-3 py-2 rounded-full",
-                    on: {
-                      click: function ($event) {
-                        return _vm.$store.dispatch("postMessage")
-                      },
-                    },
+                    on: { click: _vm.postHandler },
                   },
                   [_vm._v("\n          Post\n        ")]
                 )
@@ -55425,14 +55468,15 @@ var render = function () {
         _c(
           "button",
           {
+            ref: "postImage",
             staticClass:
-              "flex justify-center items-center rounded-full w-10 h-10 bg-gray-200",
+              "dz-clickable flex justify-center items-center rounded-full w-10 h-10 bg-gray-200",
           },
           [
             _c(
               "svg",
               {
-                staticClass: "fill-current w-5 h-5",
+                staticClass: "dz-clickable fill-current w-5 h-5",
                 attrs: {
                   xmlns: "http://www.w3.org/2000/svg",
                   viewBox: "0 0 24 24",

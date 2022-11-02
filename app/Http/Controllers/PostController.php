@@ -68,7 +68,7 @@ class PostController extends Controller
         }
         $post = request()->user()->posts()->create([
             'body'=> $data['body'],
-            'image'=> $image ?? null ,
+            'image'=> '/storage/'.$image ?? null ,
         ]);
         return new PostResource($post);
     }

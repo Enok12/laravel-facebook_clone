@@ -30,7 +30,7 @@
         <transition name="fade">
           <button
             v-if="postMessage"
-            @click="$store.dispatch('postMessage')"
+            @click="postHandler"
             class="bg-gray-200 ml-2 px-3 py-2 rounded-full"
           >
             Post
@@ -39,7 +39,9 @@
       </div>
       <div>
         <button
+          ref="postImage"
           class="
+            dz-clickable
             flex
             justify-center
             items-center
@@ -52,7 +54,7 @@
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            class="fill-current w-5 h-5"
+            class="dz-clickable fill-current w-5 h-5"
           >
             <path
               d="M21.8 4H2.2c-.2 0-.3.2-.3.3v15.3c0 .3.1.4.3.4h19.6c.2 0 .3-.1.3-.3V4.3c0-.1-.1-.3-.3-.3zm-1.6 13.4l-4.4-4.6c0-.1-.1-.1-.2 0l-3.1 2.7-3.9-4.8h-.1s-.1 0-.1.1L3.8 17V6h16.4v11.4zm-4.9-6.8c.9 0 1.6-.7 1.6-1.6 0-.9-.7-1.6-1.6-1.6-.9 0-1.6.7-1.6 1.6.1.9.8 1.6 1.6 1.6z"
@@ -65,16 +67,24 @@
 </template>
 
 <script>
+import _ from "lodash";
+import { mapGetters } from "vuex";
+import Dropzone from "dropzone";
 
-import _ from 'lodash'; 
-import {mapGetters} from 'vuex'   
 export default {
   name: "NewPost",
+  data: () => {
+    return {
+      dropzone: null,
+    };
+  },
+  mounted() {
+    this.dropzone = new Dropzone(this.$refs.postImage, this.settings);
+  },
 
   computed: {
-
     ...mapGetters({
-      authUser:'authUser',
+      authUser: "authUser",
     }),
 
     postMessage: {
@@ -83,18 +93,53 @@ export default {
       },
       set: _.debounce(function (postMessage) {
         this.$store.commit("updateMessage", postMessage);
-      },300),
-    }
-  }
+      }, 300),
+    },
+
+    settings() {
+      return {
+        paramName: "image",
+        url: "/api/posts",
+        acceptedFiles: "image/*",
+        clickable: ".dz-clickable",
+        autoProcessQueue: false,
+        params: function params(files, xhr, chunk) {
+          return { width: 1000, height: 1000 };
+        },
+
+        headers: {
+          "X-CSRF-TOKEN": document.head.querySelector("meta[name=csrf-token]")
+            .content,
+        },
+        sending:(files, xhr, formData)=>{
+          formData.append('body',this.$store.getters.postMessage);
+        },
+        success: (e, res) => {
+          alert("success");
+        },
+      };
+    },
+  },
+  methods: {
+    postHandler() {
+      if (this.dropzone.getAcceptedFiles().length) {
+        this.dropzone.processQueue();
+      } else {
+        this.$store.dispatch("postMessage");
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.fade-enter-active,.fade-leave-active{
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
-.fade-enter,.fade-leave-to{
-   opacity: 0;
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
