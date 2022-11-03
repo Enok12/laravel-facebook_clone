@@ -59,6 +59,8 @@ class PostController extends Controller
 
         ]);
 
+        $image = null;
+        
         if(isset($data['image'])){
             $image = $data['image']->store('post-images','public');
 
@@ -66,9 +68,10 @@ class PostController extends Controller
             ->fit($data['width'],$data['height'])
             ->save(storage_path('app/public/post-images/'.$data['image']->hashName()));
         }
+
         $post = request()->user()->posts()->create([
             'body'=> $data['body'],
-            'image'=> '/storage/'.$image ?? null ,
+            'image'=> ($image) ? '/storage/'.$image : null ,
         ]);
         return new PostResource($post);
     }

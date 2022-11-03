@@ -45,6 +45,7 @@ const actions = {
             .post("/api/posts",{body:state.postMessage})
             .then((res) => {
                 commit('pushPost', res.data)
+                commit('setPostsStatus', 'Success')
                 commit('updateMessage', '')
 
             })
